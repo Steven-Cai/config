@@ -118,3 +118,11 @@ c-basic-offset 4)
 (setq indent-tabs-mode t)
 (setq c-basic-offset 8))
 (add-to-list 'auto-mode-alist '("\.c$" . linux-c-mode))
+
+;;配置Cscope
+(add-to-list 'load-path "~/.emacs.d/site-lisp")
+(require 'xcscope)
+;; 设置仅在打开c/c++文件时才加载xcscope
+(add-hook 'c-mode-common-hook '(lambda() (require 'xcscope)))
+;; 打开cscope时不更新，提高索引速度
+(setq cscope-do-not-update-database t)

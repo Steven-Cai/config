@@ -1,0 +1,8 @@
+[cscope]
+$ ./configure
+$ make
+$ sudo make install
+$ cp xcscope.el ~/.emacs.d/	(contrib/xcscope/xcscope.el)
+$ sudo cp cscope-indexer /usr/bin
+$ cd /usr/bin
+$ sudo chmod 744 cscope-indexer
