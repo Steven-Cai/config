@@ -2,47 +2,91 @@
 
 pwd=`pwd`
 tmp_dir=`pwd`/tools/tmp
-black_hole="/dev/null 2>&1"
 
 # dead work
-mkdir ${tmp_dir}
+mkdir ${tmp_dir} > /dev/null 2>&1
 
-function make_install()
+make_install()
 {
-    cd ${pwd}/tools
-    tar -xzf $1 -C ${tmp_dir}
-    cd ${tmp_dir}/$1
-    ./configure > ${black_hole}
-    make > ${black_hole}
-    sudo make install > ${black_hole}
-    cd ${pwd}
+    cd ${pwd}/tools;
+    tar -xzf $1 -C ${tmp_dir};
+    cd ${tmp_dir}/$1;
+    ./configure > /dev/null 2>&1;
+    make > /dev/null 2>&1;
+    sudo make install > /dev/null 2>&1;
+    cd ${pwd};
+}
+
+apt_install()
+{
+    echo y |  sudo apt-get install $1 > /dev/null 2>&1;
+}
+
+
+git()
+{
+    echo "Install Git..."
+    apt_install git
+}
+
+ssh()
+{
+    apt_install openssh-server
 }
 
 #
 # Latex
 #
-echo "Install LaTex..."
-sudo apt-get install texlive-latex-base
-sudo apt-get install latex-cjk-all
-sudo apt-get install texlive-latex-extra
+latex()
+{
+    echo "Install LaTex..."
+    apt_install texlive-latex-base
+    apt_install latex-cjk-all
+    apt_install texlive-latex-extra
+}
 
 #
 # Emacs
 #
-echo "Install and config Emacs..."
-echo "        Configing Emacs..."
-cd ${pwd}/emacs
-cp -rf .emacs ~/
-cp -rf .emacs.d ~/
+emacs()
+{
+    echo "Install and config Emacs..."
+    echo "        Installing Emacs..."
+    apt_install emacs23
+    echo "        Configing Emacs..."
+    cd ${pwd}/emacs
+    cp -rf .emacs ~/
+    cp -rf .emacs.d ~/
 
-echo "        Installing Cscope..."
-make_install cscope*
-sudo cp ${tmp_dir}/cscope*/contrib/xcscope/cscope-indexer /usr/bin
-sudo chmod 755 /usr/bin/cscope-indexer
-sed -i 's/cscope -b -i $LIST_FILE -f $DATABASE_FILE/cscope -q -b -i $LIST_FILE -f $DATABASE_FILE/' /usr/bin/cscope-indexer
+    echo "        Installing Cscope..."
+    make_install cscope*
+    sudo cp ${tmp_dir}/cscope*/contrib/xcscope/cscope-indexer /usr/bin
+    sudo chmod 755 /usr/bin/cscope-indexer
+    sudo sed -i 's/cscope -b -i $LIST_FILE -f $DATABASE_FILE/cscope -q -b -i $LIST_FILE -f $DATABASE_FILE/' /usr/bin/cscope-indexer
 
-echo "        Installing auctex..."
-make_install auctex*
+    echo "        Installing auctex..."
+    make_install auctex*
+}
+
+if [ -z "$1" ]; then
+git;
+ssh;
+latex;
+emacs;
+else
+case $1 in
+    git)
+	git;;
+    ssh)
+	ssh;;
+    latex)
+	latex;;
+    emacs)
+	emacs;;
+    *)
+	echo "Please check your first argument: $1"
+esac
+fi
 
 rm -rf ${tmp_dir}
 
