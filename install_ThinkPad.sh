@@ -22,18 +22,6 @@ apt_install()
     echo y |  sudo apt-get install $1 > /dev/null 2>&1;
 }
 
-
-git()
-{
-    echo "Install Git..."
-    apt_install git
-}
-
-ssh()
-{
-    apt_install openssh-server
-}
-
 #
 # Latex
 #
@@ -68,21 +56,44 @@ emacs()
     make_install auctex*
 }
 
+#
+# environment
+#
+environment()
+{
+    echo "Installing ruby1.9.3..."
+    apt_install ruby1.9.3
+
+    echo "Installing Git..."
+    apt_install git
+
+    echo "Installing ssh..."
+    apt_install openssh-server
+}
+
+#
+# config
+#
+config()
+{
+
+}
+
 if [ -z "$1" ]; then
-git;
-ssh;
 latex;
 emacs;
+environment;
+config;
 else
 case $1 in
-    git)
-	git;;
-    ssh)
-	ssh;;
     latex)
 	latex;;
     emacs)
 	emacs;;
+    environment)
+	environment;;
+    config)
+	config;;
     *)
 	echo "Please check your first argument: $1"
 esac
@@ -91,3 +102,4 @@ fi
 rm -rf ${tmp_dir}
 
 exit 0
+

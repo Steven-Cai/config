@@ -126,3 +126,6 @@ c-basic-offset 4)
 (add-hook 'c-mode-common-hook '(lambda() (require 'xcscope)))
 ;; 打开cscope时不更新，提高索引速度
 (setq cscope-do-not-update-database t)
+
+;;configuration for org-mode
+(setq org-startup-indented t)
