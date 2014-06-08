@@ -48,6 +48,7 @@ emacs()
 
     echo "        Installing Cscope..."
     make_install cscope*
+    sudo cp ${tmp_dir}/cscope*/src/cscope /usr/bin/
     sudo cp ${tmp_dir}/cscope*/contrib/xcscope/cscope-indexer /usr/bin
     sudo chmod 755 /usr/bin/cscope-indexer
     sudo sed -i 's/cscope -b -i $LIST_FILE -f $DATABASE_FILE/cscope -q -b -i $LIST_FILE -f $DATABASE_FILE/' /usr/bin/cscope-indexer
@@ -76,7 +77,7 @@ environment()
 #
 config()
 {
-
+    echo "TODO: Some configurations need to be done"
 }
 
 if [ -z "$1" ]; then
