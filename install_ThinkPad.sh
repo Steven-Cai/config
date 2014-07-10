@@ -47,6 +47,8 @@ emacs()
     cp -rf .emacs.d ~/
 
     echo "        Installing Cscope..."
+    apt_install libncurses5-dev
+    apt_install libncursesw5-dev
     make_install cscope*
     sudo cp ${tmp_dir}/cscope*/src/cscope /usr/bin/
     sudo cp ${tmp_dir}/cscope*/contrib/xcscope/cscope-indexer /usr/bin
@@ -58,9 +60,18 @@ emacs()
 }
 
 #
-# environment
+# editor
 #
-environment()
+editor()
+{
+    latex;
+    emacs;
+}
+
+#
+# development
+#
+development()
 {
     echo "Installing ruby1.9.3..."
     apt_install ruby1.9.3
@@ -73,24 +84,54 @@ environment()
 }
 
 #
+# environment
+#
+environment()
+{
+    # youdao dictionary
+    echo "Installing youdao dictionary"
+    echo ENTER > sudo add-apt-repository ppa:xdlailai/openyoudao #> /dev/null 2>&1
+    sudo apt-get update #> /dev/null 2>&1
+    apt_install openyoudao
+
+    # input method
+    # apt_install ibus
+    # apt_install ibus-clutter
+    # apt_install ibus-gtk
+    # apt_install ibus-gtk3
+    # apt_install ibus-qt4
+    # im-switch -s ibus
+    # apt_install ibus-googlepinyin
+    # ibus-setup
+    # ibus-daemon -drx
+}
+
+#
 # config
 #
 config()
 {
-    echo "TODO: Some configurations need to be done"
+    echo "Add thinkpad_init.sh to init shell"
+    cp ./scripts/thinkpad_init.sh /etc/init.d/
+    sudo chmod 755 /etc/init.d/thinkpad_init.sh
+    sudo update-rc.d thinkpad_init.sh defaults 95 > /dev/null 2>&1
+    sudo cp ./scripts/thinkpad_init.sh /etc/profile.d/
 }
 
+#
+# Start installation and configuration
+#
 if [ -z "$1" ]; then
-latex;
-emacs;
+editor;
+development;
 environment;
 config;
 else
 case $1 in
-    latex)
-	latex;;
-    emacs)
-	emacs;;
+    editor)
+	editor;;
+    development)
+	development;;
     environment)
 	environment;;
     config)
