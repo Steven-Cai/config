@@ -94,6 +94,9 @@ environment()
     sudo apt-get update #> /dev/null 2>&1
     apt_install openyoudao
 
+    # spice - circuit simulation
+    apt_install ngspice
+
     # input method
     # apt_install ibus
     # apt_install ibus-clutter
