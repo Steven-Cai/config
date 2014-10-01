@@ -42,7 +42,7 @@ emacs()
     echo "        Installing Emacs..."
     apt_install emacs23
     echo "        Configing Emacs..."
-    cd ${pwd}/emacs
+    cd ${pwd}/files
     cp -rf .emacs ~/
     cp -rf .emacs.d ~/
 
@@ -107,6 +107,14 @@ environment()
     # apt_install ibus-googlepinyin
     # ibus-setup
     # ibus-daemon -drx
+
+    # xmind
+    # Firstly, install xmind(V3.4.1) from pan.baidu.com
+    # following is how to upgrade to Pro version in free
+    # 1: copy patch file to direction
+    sudo cp files/net.xmind.verify_3.4.1.201401221918.jar /usr/local/xmind/plugins/ # this patch may be ONLY for V3.4.1
+    # 2: click help -> license -> change license key, then input email and serial number
+    # input serial number: "yisufuyou"(exclude character ")
 }
 
 #
