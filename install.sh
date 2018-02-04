@@ -122,34 +122,50 @@ environment()
 #
 config()
 {
-    echo "Add thinkpad_init.sh to init shell"
-    cp ./scripts/thinkpad_init.sh /etc/init.d/
-    sudo chmod 755 /etc/init.d/thinkpad_init.sh
-    sudo update-rc.d thinkpad_init.sh defaults 95 > /dev/null 2>&1
-    sudo cp ./scripts/thinkpad_init.sh /etc/profile.d/
+    echo "Add linux_init.sh to init shell"
+    cp ./scripts/linux_init.sh /etc/init.d/
+    sudo chmod 755 /etc/init.d/linux_init.sh
+    sudo update-rc.d linux_init.sh defaults 95 > /dev/null 2>&1
+    sudo cp ./scripts/linux_init.sh /etc/profile.d/
+}
+
+mac()
+{
+    echo "        Configing Emacs..."
+    cd ${pwd}/files
+    cp -rf .emacs ~/
+    cp -rf .emacs.d ~/
+
+    brew install cscope
+    make_install cscope*
+    sudo cp ${tmp_dir}/cscope*/contrib/xcscope/cscope-indexer /usr/bin
+    sudo chmod 755 /usr/bin/cscope-indexer
+    sudo sed -i 's/cscope -b -i $LIST_FILE -f $DATABASE_FILE/cscope -q -b -i $LIST_FILE -f $DATABASE_FILE/' /usr/bin/cscope-indexer
 }
 
 #
 # Start installation and configuration
 #
 if [ -z "$1" ]; then
-editor;
-development;
-environment;
-config;
+    editor;
+    development;
+    environment;
+    config;
 else
-case $1 in
-    editor)
-	editor;;
-    development)
-	development;;
-    environment)
-	environment;;
-    config)
-	config;;
-    *)
-	echo "Please check your first argument: $1"
-esac
+    case $1 in
+	editor)
+	    editor;;
+	development)
+	    development;;
+	environment)
+	    environment;;
+	config)
+	    config;;
+	mac)
+	    mac;;
+	*)
+	    echo "Please check your first argument: $1"
+    esac
 fi
 
 rm -rf ${tmp_dir}
