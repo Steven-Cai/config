@@ -1,0 +1,1002 @@
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;; Filename:      .emacs
+;;               
+;; Copyright (C) 2013,  Steven Cai
+;; Version:       20160918
+;; Author:        Steven <stevencaiyaohua#gmail.com>
+;; Created at:    Wed July 17 15:56:07 2013
+;;               
+;; Description:   
+;;                
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
+* Packages
+  #+BEGIN_SRC emacs-lisp
+    ;;; On-demand installation of packages
+
+    (defun require-package (package &optional min-version no-refresh)
+      "Install given PACKAGE, optionally requiring MIN-VERSION.
+    If NO-REFRESH is non-nil, the available package lists will not be
+    re-downloaded in order to locate PACKAGE."
+      (if (package-installed-p package min-version)
+          t
+        (if (or (assoc package package-archive-contents) no-refresh)
+            (if (boundp 'package-selected-packages)
+                ;; Record this as a package the user installed explicitly
+                (package-install package nil)
+              (package-install package))
+          (progn
+            (package-refresh-contents)
+            (require-package package min-version t)))))
+
+
+    (defun maybe-require-package (package &optional min-version no-refresh)
+      "Try to install PACKAGE, and return non-nil if successful.
+    In the event of failure, return nil and print a warning message.
+    Optionally require MIN-VERSION.  If NO-REFRESH is non-nil, the
+    available package lists will not be re-downloaded in order to
+    locate PACKAGE."
+      (condition-case err
+          (require-package package min-version no-refresh)
+        (error
+         (message "Couldn't install package `%s': %S" package err)
+         nil)))
+  #+END_SRC
+** use-package
+   #+BEGIN_SRC emacs-lisp
+     (unless (package-installed-p 'use-package)
+       (package-refresh-contents)
+       (package-install 'use-package))
+     (require 'use-package)
+   #+END_SRC
+
+ 
+
+* Personal information
+  #+BEGIN_SRC emacs-lisp
+    (setq user-full-name "Steven Cai")
+    (setq user-mail-address "stevencaiyaohua@gmail.com")
+  #+END_SRC
+
+
+* Custom
+** emacs UI
+   Disable some no used menu bar to enlarge our main frame.
+   #+BEGIN_SRC emacs-lisp
+     (when (functionp 'menu-bar-mode)
+       (menu-bar-mode -1))
+     (when (functionp 'set-scroll-bar-mode)
+       (set-scroll-bar-mode 'nil))
+     (when (functionp 'mouse-wheel-mode)
+       (mouse-wheel-mode -1))
+     (when (functionp 'tooltip-mode)
+       (tooltip-mode -1))
+     (when (functionp 'tool-bar-mode)
+       (tool-bar-mode -1))
+     (when (functionp 'blink-cursor-mode)
+       (blink-cursor-mode -1))
+
+     (column-number-mode 1)
+     (line-number-mode 1)
+   #+END_SRC
+
+** high light
+   #+BEGIN_SRC emacs-lisp
+     ;; Highlight current line
+     ;;(global-hl-line-mode 1)
+
+     (show-paren-mode t) ;; 匹配括号高亮
+     ;;; Also highlight parens  
+     (setq show-paren-delay 0  
+           show-paren-style 'parenthesis)
+
+     (require-package 'anzu)
+     (global-anzu-mode +1)
+     (global-set-key [remap query-replace-regexp] 'anzu-query-replace-regexp)
+     (global-set-key [remap query-replace] 'anzu-query-replace)
+
+     ;; 最短时间显示指令序列
+     (setq echo-keystrokes 0.1)
+     (setq inhibit-startup-message t)
+     (fset 'yes-or-no-p 'y-or-n-p)
+     ;; 防止页面滚动时跳动,scroll-margin 3可以在靠近屏幕边沿3行时就开始滚动,可
+     ;; 以很好的看到上下文
+     (setq scroll-margin 3
+           scroll-conservatively 10000)
+
+     (setq ring-bell-function 'ignore)
+
+     (mouse-avoidance-mode 'animate)
+
+     ;; share clipboard with X, 
+     (setq x-select-enable-clipboard t)
+     ;; share clipboard with app, suite for "C-c"
+     (setq x-select-enable-primary t)
+
+     ;; (setq frame-title-format
+     ;;       '("emacs:%S" (buffer-file-name "%f"
+     ;;                             (dired-directory dired-directory "%b"))))
+     (setq frame-title-format "%f %4 %b %Z %* %10 %I")
+
+   #+END_SRC
+** smart-modeline
+   #+BEGIN_SRC emacs-lisp
+     (require-package 'smart-mode-line)
+
+     (display-time-mode 1)
+     (setq display-time-24hr-format t)
+     (setq display-time-day-and-date t)
+     (require 'smart-mode-line)
+     (setq sml/no-confirm-load-theme t)
+     (setq powerline-arrow-shape 'curve)
+     (setq powerline-default-separator-dir '(right . left))
+     (setq sml/mode-width 0)
+     (setq sml/name-width 20)
+     (rich-minority-mode 1)
+     (setf rm-blacklist "")
+     (setq sml/theme 'dark)
+     (sml/setup)
+   #+END_SRC
+
+** setting
+   #+BEGIN_SRC emacs-lisp
+     ;;don't generate temporary backup file
+     (setq-default make-backup-files nil)
+
+     ;; 以 y/n代表 yes/no
+     (fset 'yes-or-no-p 'y-or-n-p)
+   #+END_SRC
+
+
+* General
+** keystrokes
+   #+BEGIN_SRC emacs-lisp
+     (global-set-key (kbd "<f1>") 'eshell)
+   #+END_SRC
+
+** Desktop save
+   #+BEGIN_SRC emacs-lisp
+     (desktop-save-mode 1)
+   #+END_SRC
+** ediff
+   #+BEGIN_SRC emacs-lisp
+     (setq ediff-window-setup-function 'ediff-setup-windows-plain
+           ediff-split-window-function 'split-window-horizontally)
+   #+END_SRC
+** youdao
+   #+BEGIN_SRC emacs-lisp
+     ;; Enable cache
+     (require-package 'youdao-dictionary)
+     (setq url-automatic-caching t)
+     (global-set-key (kbd "C-c y") 'youdao-dictionary-search-at-point)
+   #+END_SRC
+
+
+* Emacs extension
+** window operation
+   #+BEGIN_SRC emacs-lisp
+     (defun my/vsplit-last-buffer (prefix)
+       "Split the window vertically and display the previous buffer."
+       (interactive "p")
+       (split-window-vertically)
+       (other-window 1 nil)
+       (if (= prefix 1)
+           (switch-to-next-buffer)))
+     (defun my/hsplit-last-buffer (prefix)
+       "Split the window horizontally and display the previous buffer."
+       (interactive "p")
+       (split-window-horizontally)
+       (other-window 1 nil)
+       (if (= prefix 1) (switch-to-next-buffer)))
+
+     (global-set-key (kbd "C-x 2") 'my/vsplit-last-buffer)
+     (global-set-key (kbd "C-x 3") 'my/hsplit-last-buffer)
+
+     (defun sanityinc/toggle-delete-other-windows ()
+       "Delete other windows in frame if any, or restore previous window config."
+       (interactive)
+       (if (and winner-mode
+                (equal (selected-window) (next-window)))
+           (winner-undo)
+         (delete-other-windows)))
+
+     (global-set-key "\C-x1" 'sanityinc/toggle-delete-other-windows)
+
+     ;;----------------------------------------------------------------------------
+     ;; Rearrange split windows
+     ;;----------------------------------------------------------------------------
+     ;;----------------------------------------------------------------------------
+     ;; When splitting window, show (other-buffer) in the new window
+     ;;----------------------------------------------------------------------------
+     (defun split-window-func-with-other-buffer (split-function)
+     (lexical-let ((s-f split-function))
+     (lambda (&optional arg)
+      "Split this window and switch to the new window unless ARG is provided."
+      (interactive "P")
+      (funcall s-f)
+      (let ((target-window (next-window)))
+        (set-window-buffer target-window (other-buffer))
+        (unless arg
+          (select-window target-window))))))
+
+     (defun split-window-horizontally-instead ()
+       (interactive)
+       (save-excursion
+         (delete-other-windows)
+         (funcall (split-window-func-with-other-buffer 'split-window-horizontally))))
+
+     (defun split-window-vertically-instead ()
+       (interactive)
+       (save-excursion
+         (delete-other-windows)
+         (funcall (split-window-func-with-other-buffer 'split-window-vertically))))
+
+     (global-set-key "\C-x|" 'split-window-horizontally-instead)
+     (global-set-key "\C-x_" 'split-window-vertically-instead)
+
+   #+END_SRC
+
+** rainbow delimiters
+   #+BEGIN_SRC emacs-lisp 
+     (require-package 'rainbow-delimiters)
+     (require-package 'rainbow-mode)
+
+     (add-hook 'emacs-lisp-mode-hook 'rainbow-delimiters-mode)
+     (add-hook 'c-mode-hook 'rainbow-delimiters-mode)
+   #+END_SRC
+
+** Golden Ratio
+   #+BEGIN_SRC emacs-lisp
+     (require-package 'golden-ratio)
+     ;; (setq 'golden-ratio-inhibit-functions 'pl/helm-alive-p)
+     ;; (defun pl/helm-alive-p ()
+     ;;   (if (boundp 'helm-alive-p)
+     ;;       (symbol-value 'helm-alive-p)))
+
+     ;; do not enable golden-raio in thses modes
+     (setq golden-ratio-exclude-modes '("ediff-mode"
+                                        "helm-mode"
+                                        "dired-mode"
+                                        "gud-mode"
+                                        "gdb-locals-mode"
+                                        "gdb-registers-mode"
+                                        "gdb-breakpoints-mode"
+                                        "gdb-threads-mode"
+                                        "gdb-frames-mode"
+                                        "gdb-inferior-io-mode"
+                                        "gud-mode"
+                                        "gdb-inferior-io-mode"
+                                        "gdb-disassembly-mode"
+                                        "gdb-memory-mode"
+                                        "magit-log-mode"
+                                        "magit-reflog-mode"
+                                        "magit-status-mode"
+                                        "IELM"
+                                        ;; "eshell-mode"
+                                        "fundamental-mode"
+                                        "dired-mode"))
+
+     (golden-ratio-mode 1)
+     (setq golden-ratio-auto-scale t)
+     (add-to-list 'golden-ratio-extra-commands 'ace-window)
+   #+END_SRC
+
+** nyan-mode
+   The nyan cat show where the cursor is in the current buffer.
+   #+BEGIN_SRC emacs-lisp
+     (require-package 'nyan-mode)
+     (nyan-mode 1)
+   #+END_SRC
+
+
+* Program
+** code-style
+    #+BEGIN_SRC emacs-lisp
+        ;; 设置默认tab宽度为4
+        (setq tab-width 4
+        indent-tabs-mode t
+        c-basic-offset 4)
+
+	;; 回车缩进
+	(global-set-key "\C-m" 'newline-and-indent)
+	(global-set-key (kbd "C-<return>") 'newline)
+
+	;; 语法高亮
+	(global-font-lock-mode t)
+
+	;;Coding style for Linux kernel
+	(defun linux-c-mode ()
+	   "C mode with adjusted defaults for use with the Linux kernel."
+	(interactive)
+	(c-mode)
+	(c-set-style "K&R")
+	(setq tab-width 8)
+	(setq indent-tabs-mode t)
+	(setq c-basic-offset 8))
+	(add-to-list 'auto-mode-alist '("\.c$" . linux-c-mode))
+
+    #+END_SRC
+
+** magit
+   #+BEGIN_SRC emacs-lisp
+     (require-package 'magit)
+
+     (global-set-key (kbd "C-x g") 'magit-status)
+
+     ;;----------------------------------------------------------------------------
+     ;; String utilities missing from core emacs
+     ;;----------------------------------------------------------------------------
+     (defun sanityinc/string-all-matches (regex str &optional group)
+       "Find all matches for `REGEX' within `STR', returning the full match string or group `GROUP'."
+       (let ((result nil)
+             (pos 0)
+             (group (or group 0)))
+         (while (string-match regex str pos)
+           (push (match-string group str) result)
+           (setq pos (match-end group)))
+         result))
+
+     (defun sanityinc/string-rtrim (str)
+       "Remove trailing whitespace from `STR'."
+       (replace-regexp-in-string "[ \t\n]+$" "" str))
+
+     (defvar git-svn--available-commands nil "Cached list of git svn subcommands")
+     (defun git-svn--available-commands ()
+       (or git-svn--available-commands
+           (setq git-svn--available-commands
+                 (sanityinc/string-all-matches
+                  "^  \\([a-z\\-]+\\) +"
+                  (shell-command-to-string "git svn help") 1))))
+
+     (defun git-svn (dir command)
+       "Run a git svn subcommand in DIR."
+       (interactive (list (read-directory-name "Directory: ")
+                          (completing-read "git-svn command: " (git-svn--available-commands) nil t nil nil (git-svn--available-commands))))
+       (let* ((default-directory (vc-git-root dir))
+              (compilation-buffer-name-function (lambda (major-mode-name) "*git-svn*")))
+         (compile (concat "git svn " command))))
+
+   #+END_SRC
+
+** Company Mode
+#+BEGIN_SRC emacs-lisp
+  (require-package 'company)
+  (require-package 'company-flx)
+  (require-package 'company-c-headers)
+
+  (use-package company
+    :ensure t
+    :diminish company-mode
+    :init
+    (global-company-mode 1)
+    (setq company-backends (delete 'company-semantic company-backends))
+    (add-to-list 'company-backends 'company-c-headers)
+    (add-to-list 'company-backends 'company-clang)
+    (with-eval-after-load 'company
+      (company-flx-mode +1))
+
+    :config
+    (bind-keys :map company-active-map
+               ("C-n" . company-select-next)
+               ("C-p" . company-select-previous)
+               ("C-d" . company-show-doc-buffer)
+               ("<tab>" . company-complete)))
+#+END_SRC
+
+To retrive candidates for your projects, you will have to tell Clang
+where your include paths are, create a file named =.dir-local.el= at
+your project root:
+#+BEGIN_SRC emacs-lisp :tangle no
+  ((nil . ((company-clang-arguments . ("-I/home/<user>/project_root/include1/"
+                                       "-I/home/<user>/project_root/include2/")))))
+#+END_SRC
+
+** markdown/json-mode
+    #+BEGIN_SRC emacs-lisp
+      (require-package 'markdown-mode)
+      (require 'markdown-mode)
+
+      (require-package 'json-mode)
+      (require 'json-mode)
+    #+END_SRC
+
+** xcscope
+    #+BEGIN_SRC emacs-lisp
+      (require-package 'xcscope)
+      (require 'xcscope)
+      (cscope-setup)
+      (add-hook 'c-mode-common-hook '(lambda() (require 'xcscope)))
+      (setq cscope-do-not-update-database t)
+    #+END_SRC
+
+
+* Helm
+** helm settings
+   #+BEGIN_SRC emacs-lisp
+     (require-package 'helm)
+     (require-package 'helm-flx)
+     (require-package 'helm-fuzzier)
+     (require 'helm)
+
+     (require 'helm-config)
+     ;; The default "C-x c" is quite close to "C-x C-c", which quits Emacs.
+     ;; Changed to "C-c h". Note: We must set "C-c h" globally, because we
+     ;; cannot change `helm-command-prefix-key' once `helm-config' is loaded.
+     (global-set-key (kbd "C-c h") 'helm-command-prefix)
+     (global-unset-key (kbd "C-x c"))
+
+     (define-key helm-map (kbd "<tab>") 'helm-execute-persistent-action) ; rebind tab to run persistent action
+     (define-key helm-map (kbd "C-i") 'helm-execute-persistent-action) ; make TAB works in terminal
+     (define-key helm-map (kbd "C-z")  'helm-select-action) ; list actions using C-z
+
+     (when (executable-find "curl")
+       (setq helm-google-suggest-use-curl-p t))
+
+     (setq helm-split-window-in-side-p           t ; open helm buffer inside current window, not occupy whole other window
+           helm-move-to-line-cycle-in-source     t ; move to end or beginning of source when reaching top or bottom of source.
+           helm-ff-search-library-in-sexp        t ; search for library in `require' and `declare-function' sexp.
+           helm-scroll-amount                    8 ; scroll 8 lines other window using M-<next>/M-<prior>
+           helm-ff-file-name-history-use-recentf t)
+
+     (helm-mode 1)
+
+     (helm-flx-mode +1)
+     (helm-fuzzier-mode 1)
+
+     (setq helm-M-x-fuzzy-match t) ;; optional fuzzy matching for helm-M-x
+     (setq helm-buffers-fuzzy-matching t
+           helm-recentf-fuzzy-match    t)
+
+     (global-set-key (kbd "M-x") 'helm-M-x)
+     (global-set-key (kbd "C-x y") 'helm-show-kill-ring)
+     (global-set-key (kbd "C-x b") 'helm-mini)
+     (global-set-key (kbd "C-x C-f") 'helm-find-files)
+     (global-set-key (kbd "M-i") 'helm-occur)
+
+     (global-set-key (kbd "C-c p f") 'helm-projectile-find-file-dwim)
+     (global-set-key (kbd "C-c p p") 'helm-projectile-switch-project)
+
+
+     (when (executable-find "ack-grep")
+       (setq helm-grep-default-command "ack-grep -Hn --no-group --no-color %e %p %f"
+             helm-grep-default-recurse-command "ack-grep -H --no-group --no-color %e %p %f"))
+
+     (global-set-key (kbd "C-h SPC") 'helm-all-mark-rings)
+   #+END_SRC
+
+   List eshell history:
+   #+BEGIN_SRC emacs-lisp
+     (add-hook 'eshell-mode-hook
+               #'(lambda ()
+                   (define-key eshell-mode-map (kbd "C-c C-l")  'helm-eshell-history)))
+   #+END_SRC
+
+** helm-gtags
+   #+BEGIN_SRC emacs-lisp
+     (require-package 'helm-gtags)
+     (require 'helm-gtags)
+
+     ;; Enable helm-gtags-mode
+     (add-hook 'c-mode-hook 'helm-gtags-mode)
+     (add-hook 'c++-mode-hook 'helm-gtags-mode)
+     (add-hook 'asm-mode-hook 'helm-gtags-mode)
+
+     (setq helm-gtags-auto-update t)
+     (setq helm-gtags-update-interval-second 60)
+
+     ;; Set key bindings
+     (eval-after-load "helm-gtags"
+       '(progn
+          (define-key helm-gtags-mode-map (kbd "M-t") 'helm-gtags-find-tag)
+          (define-key helm-gtags-mode-map (kbd "M-r") 'helm-gtags-find-rtag)
+          (define-key helm-gtags-mode-map (kbd "M-s") 'helm-gtags-find-symbol)
+          (define-key helm-gtags-mode-map (kbd "M-g M-p") 'helm-gtags-parse-file)
+          (define-key helm-gtags-mode-map (kbd "C-c <") 'helm-gtags-previous-history)
+          (define-key helm-gtags-mode-map (kbd "C-c >") 'helm-gtags-next-history)
+          (define-key helm-gtags-mode-map (kbd "M-,") 'helm-gtags-pop-stack)))
+   #+END_SRC
+
+** helm-pass
+#+BEGIN_SRC emacs-lisp
+  (require-package 'helm-pass)
+#+END_SRC
+
+
+* Org-mode
+** basic 
+   #+BEGIN_SRC emacs-lisp
+     (require-package 'org)
+     (require-package 'org-bullets)
+     ;; (require-package 'org-screenshot)
+
+     (add-to-list 'auto-mode-alist '("\\.txt\\'" . org-mode))
+
+
+     (add-hook 'org-mode-hook (lambda () (org-bullets-mode 1)))
+     (add-hook 'org-mode-hook (lambda () (org-indent-mode t)))
+
+     ;; Various preferences
+     (setq org-log-done t
+           org-completion-use-ido t
+           org-edit-timestamp-down-means-later t
+           org-archive-mark-done nil
+           org-catch-invisible-edits 'show
+           org-export-coding-system 'utf-8
+           org-fast-tag-selection-single-key 'expert
+           org-html-validation-link nil
+           org-export-kill-product-buffer-when-displayed t
+           org-list-allow-alphabetical t
+           org-tags-column 80)
+
+     ;; (add-hook 'org-mode-hook 'auto-fill-mode) ;
+
+     ;; The bottom line issue
+     (setq org-use-sub-superscripts (quote {})
+           org-export-with-sub-superscripts (quote {})) 
+
+     ;; (setq org-ellipsis "⤵")
+
+     (global-set-key (kbd "C-c l") 'org-store-link)
+     (global-set-key (kbd "C-c a") 'org-agenda)
+     (global-set-key (kbd "C-c b") 'org-iswitchb)
+
+   #+END_SRC
+   #+BEGIN_SRC emacs-lisp
+     (defun my-org-screenshot ()
+       "Take a screenshot into a time stamped unique-named file in the
+     same directory as the org-buffer and insert a link to this file."
+       (interactive)
+       (org-display-inline-images)
+       (setq filename
+   	  (concat
+   	   (make-temp-name
+   	    (concat (file-name-nondirectory (file-name-sans-extension buffer-file-name))
+   		    "/"
+   		    (format-time-string "%Y%m%d_%H%M%S_")) ) ".png"))
+       (unless (file-exists-p (file-name-directory filename))
+         (make-directory (file-name-directory filename)))
+   					  ; take screenshot
+       (if (eq system-type 'darwin)
+   	(progn
+   	  (call-process-shell-command "screencapture" nil nil nil nil " -s " (concat
+   									      "\"" filename "\"" ))
+   	  (call-process-shell-command "convert" nil nil nil nil (concat "\"" filename "\" -resize  \"50%\"" ) (concat "\"" filename "\"" ))
+   	  ))
+       (if (eq system-type 'gnu/linux)
+   	(call-process "import" nil nil nil filename))
+   					  ; insert into file if correctly taken
+       (if (file-exists-p filename)
+   	(insert (concat "#+attr_html: :width 800\n" "[[file:" filename "]]")))
+       ;; (org-display-inline-images)
+       )
+   #+END_SRC
+** babel
+   #+BEGIN_SRC emacs-lisp
+     (require-package 'gnuplot)
+     ;; (require-package 'puml-mode)
+
+     ;; active Babel languages
+     (org-babel-do-load-languages
+      'org-babel-load-languages
+      '((sh . t)
+        (dot . t)
+        (ditaa . t)
+        (python . t)
+        (gnuplot . t)
+        (plantuml . t)
+        (emacs-lisp . t)
+        ))
+
+     (setq org-plantuml-jar-path "/home/oscar/.emacs.d/elpa/contrib/scripts/plantuml.jar")
+     (setq puml-plantuml-jar-path "/home/oscar/.emacs.d/elpa/contrib/scripts/plantuml.jar")
+     (add-to-list 'org-src-lang-modes '("plantuml" . puml))
+   #+END_SRC
+** latex
+   #+BEGIN_SRC emacs-lisp
+     ;;
+     ;; org-mode setup
+     ;;
+
+     (require 'ox-latex)
+     (require 'ox-beamer)
+     (setq org-latex-images-centered 't)
+
+     (setq org-latex-coding-system 'utf-8)
+
+     (setf org-latex-default-packages-alist
+           (remove '("AUTO" "inputenc" t) org-latex-default-packages-alist))
+     (setf org-latex-default-packages-alist
+           (remove '("T1" "fontenc" t) org-latex-default-packages-alist))
+
+     (setq org-latex-pdf-process '("xelatex -shell-escape  %f"
+                                   "xelatex -shell-escape  %f"))
+     (setq org-latex-packages-alist
+           '("
+             \\hypersetup{ colorlinks,% 
+                     linkcolor=blue,% 
+                     citecolor=black,%
+                     urlcolor=black,%
+                     filecolor=black
+                    }
+
+             \\usepackage{array}
+             \\usepackage{xcolor}
+             \\definecolor{bg}{rgb}{0.95,0.95,0.95}"))
+
+     (add-to-list 'org-latex-packages-alist '("" "minted"))
+     (setq org-latex-listings 'minted)
+     (setq org-latex-minted-options
+           '(
+             ("bgcolor" "bg")
+             ("frame" "lines")
+             ("linenos" "")
+             ("fontsize" "\\scriptsize")
+             ))
+
+     (add-to-list 'org-latex-classes
+                  '("article-cn"
+                   "\\documentclass[11pt]{article}
+                     [DEFAULT-PACKAGES]
+                     [PACKAGES]
+                     \\usepackage{fontspec}
+
+                     \\XeTeXlinebreaklocale ``zh''
+                     \\XeTeXlinebreakskip = 0pt plus 1pt minus 0.1pt
+                     \\newcommand\\fontnamehei{WenQuanYi Zen Hei}
+                     \\newcommand\\fontnamesong{AR PL UMing CN}
+                     \\newcommand\\fontnamekai{AR PL KaitiM GB}
+                     \\newcommand\\fontnamemono{FreeMono}
+                     \\newcommand\\fontnameroman{FreeSans}
+                     \\setmainfont[BoldFont=\\fontnamehei]{\\fontnamesong}
+                     \\setsansfont[BoldFont=\\fontnamehei]{\\fontnamekai}
+                     \\setmonofont{\\fontnamemono}
+                     \\setromanfont[BoldFont=\\fontnamehei]{\\fontnamesong}
+                     \\makeatletter
+                     \\def\\verbatim@font{\\rmfamily\\small} %verbatim中使用roman字体族
+                     \\makeatother"
+
+                   ("\\section{%s}" . "\\section*{%s}")
+                   ("\\subsection{%s}" . "\\subsection*{%s}")
+                   ("\\subsubsection{%s}" . "\\subsubsection*{%s}")
+                   ("\\paragraph{%s}" . "\\paragraph*{%s}")
+                   ("\\subparagraph{%s}" . "\\subparagraph*{%s}")))
+
+     (add-to-list 'org-latex-classes
+                  '("article-img"
+                   "\\documentclass[11pt]{article}
+                     [DEFAULT-PACKAGES]
+                     [PACKAGES]
+                     \\usepackage{geometry}
+                     \\geometry{left=1.5cm,right=1.5cm,top=1.5cm,bottom=1.5cm}"
+                   ("\\section{%s}" . "\\section*{%s}")
+                   ("\\subsection{%s}" . "\\subsection*{%s}")
+                   ("\\subsubsection{%s}" . "\\subsubsection*{%s}")
+                   ("\\paragraph{%s}" . "\\paragraph*{%s}")
+                   ("\\subparagraph{%s}" . "\\subparagraph*{%s}")))
+
+   #+END_SRC
+** publish
+   #+BEGIN_SRC emacs-lisp
+     (require 'ox-publish)
+     (setq org-publish-project-alist
+        '(
+          ("blog"
+        :components ("blog-notes" "blog-static"))
+
+          ("blog-notes"
+        :base-directory "~/gitest/blog/"
+        :base-extension "org"
+        :publishing-directory "~/gitest/sagebane.github.com/"
+        :recursive t
+        :exclude "template.org"
+        :publishing-function org-html-publish-to-html
+        :headline-levels 4
+        :auto-preamble t
+        :auto-sitemap t                ; Generate sitemap.org automagically...
+        :sitemap-filename "sitemap.org"  ; ... call it sitemap.org (it's the default)...
+        :sitemap-title "Sitemap"         ; ... with title 'Sitemap'.
+        :email "fengmao dot qi at gmail dot com"
+        )
+          ("blog-static"
+        :base-directory "~/gitest/blog/"
+        :base-extension "css\\|js\\|png\\|jpg\\|gif\\|pdf\\|mp3\\|ogg\\|swf"
+        :publishing-directory "~/gitest/sagebane.github.com/"
+        :recursive t
+        :publishing-function org-publish-attachment
+        )
+          ;;
+          ))
+
+   #+END_SRC
+** Agenda
+   #+BEGIN_SRC emacs-lisp
+     ;;; To-do settings
+     (setq org-agenda-files (quote ("~/personal/life")))
+
+     (setq org-todo-keywords
+           (quote ((sequence "TODO(t)" "NEXT(n)" "|" "DONE(d!/!)")
+                   (sequence "PROJECT(p)" "|" "DONE(d!/!)" "CANCELLED(c@/!)")
+                   (sequence "WAITING(w@/!)" "HOLD(h)" "|" "CANCELLED(c@/!)"))))
+
+     (setq org-todo-keyword-faces
+           (quote (("NEXT" :inherit warning)
+                   ("PROJECT" :inherit font-lock-string-face))))
+
+
+  
+     ;;; Agenda views
+
+     (setq-default org-agenda-clockreport-parameter-plist '(:link t :maxlevel 3))
+
+
+     (let ((active-project-match "-INBOX/PROJECT"))
+
+       (setq org-stuck-projects
+             `(,active-project-match ("NEXT")))
+
+       (setq org-agenda-compact-blocks t
+             org-agenda-sticky t
+             org-agenda-start-on-weekday nil
+             org-agenda-span 'day
+             org-agenda-include-diary nil
+             org-agenda-sorting-strategy
+             '((agenda habit-down time-up user-defined-up effort-up category-keep)
+               (todo category-up effort-up)
+               (tags category-up effort-up)
+               (search category-up))
+             org-agenda-window-setup 'current-window
+             org-agenda-custom-commands
+             `(("N" "Notes" tags "NOTE"
+                ((org-agenda-overriding-header "Notes")
+                 (org-tags-match-list-sublevels t)))
+               ("g" "GTD"
+                ((agenda "" nil)
+                 (tags "INBOX"
+                       ((org-agenda-overriding-header "Inbox")
+                        (org-tags-match-list-sublevels nil)))
+                 (stuck ""
+                        ((org-agenda-overriding-header "Stuck Projects")
+                         (org-agenda-tags-todo-honor-ignore-options t)
+                         (org-tags-match-list-sublevels t)
+                         (org-agenda-todo-ignore-scheduled 'future)))
+                 (tags-todo "-INBOX/NEXT"
+                            ((org-agenda-overriding-header "Next Actions")
+                             (org-agenda-tags-todo-honor-ignore-options t)
+                             (org-agenda-todo-ignore-scheduled 'future)
+                             ;; TODO: skip if a parent is WAITING or HOLD
+                             (org-tags-match-list-sublevels t)
+                             (org-agenda-sorting-strategy
+                              '(todo-state-down effort-up category-keep))))
+                 (tags-todo ,active-project-match
+                            ((org-agenda-overriding-header "Projects")
+                             (org-tags-match-list-sublevels t)
+                             (org-agenda-sorting-strategy
+                              '(category-keep))))
+                 (tags-todo "-INBOX/-NEXT"
+                            ((org-agenda-overriding-header "Orphaned Tasks")
+                             (org-agenda-tags-todo-honor-ignore-options t)
+                             (org-agenda-todo-ignore-scheduled 'future)
+                             ;; TODO: skip if a parent is a project
+                             (org-agenda-skip-function
+                              '(lambda ()
+                                 (or (org-agenda-skip-subtree-if 'todo '("PROJECT" "HOLD" "WAITING"))
+                                     (org-agenda-skip-subtree-if 'nottododo '("TODO")))))
+                             (org-tags-match-list-sublevels t)
+                             (org-agenda-sorting-strategy
+                              '(category-keep))))
+                 (tags-todo "/WAITING"
+                            ((org-agenda-overriding-header "Waiting")
+                             (org-agenda-tags-todo-honor-ignore-options t)
+                             (org-agenda-todo-ignore-scheduled 'future)
+                             (org-agenda-sorting-strategy
+                              '(category-keep))))
+                 (tags-todo "-INBOX/HOLD"
+                            ((org-agenda-overriding-header "On Hold")
+                             ;; TODO: skip if a parent is WAITING or HOLD
+                             (org-tags-match-list-sublevels nil)
+                             (org-agenda-sorting-strategy
+                              '(category-keep))))
+                 ;; (tags-todo "-NEXT"
+                 ;;            ((org-agenda-overriding-header "All other TODOs")
+                 ;;             (org-match-list-sublevels t)))
+                 )))))
+
+   #+END_SRC
+** capture
+   #+BEGIN_SRC emacs-lisp
+     (defvar my/org-basic-task-template "* TODO %^{Task}
+     SCHEDULED: %^t
+     %<%Y-%m-%d %H:%M>
+     :PROPERTIES:
+     :Effort: %^{effort|1:00|0:05|0:15|0:30|2:00|4:00}
+     :END:
+     %?
+     " "Basic task data")
+     (setq org-capture-templates
+           `(("e" "Emacs idea" entry
+              (file+headline "~/personal/emacs-notes/tasks.org" "Emacs")
+              "* TODO %^{Task}"
+              :immediate-finish t)
+             ("t" "task todo" entry
+              (file+headline "~/personal/life/tasks.org" "work")
+              "* TODO %^{Task}"
+              :immediate-finish t)
+             ("j" "Journal entry" plain
+              (file+datetree "~/personal/journal.org")
+              "%K - %a\n%i\n%?\n"
+              :unnarrowed t)
+             ("J" "Journal entry with date" plain
+              (file+datetree+prompt "~/personal/journal.org")
+              "%K - %a\n%i\n%?\n"
+              :unnarrowed t)
+             ("q" "Quick note" item
+              (file+headline "~/personal/organizer.org" "Quick notes"))
+             ("n" "note" entry (file "~/personal/refile.org")
+              "* %? :NOTE:\n%U\n%a\n" :clock-in t :clock-resume t)
+             ("B" "Book" entry
+              (file+datetree "~/personal/books.org" "Inbox")
+              "* %^{Title}  %^g
+     %i
+     ,*Author(s):* %^{Author} \\\\
+     ,*ISBN:* %^{ISBN}
+
+     %?
+
+     ,*Review on:* %^t \\
+     %a
+     %U"
+              :clock-in :clock-resume)
+             ("c" "Contact" entry (file "~/personal/contacts.org")
+              "* %(org-contacts-template-name)
+     :PROPERTIES:
+     :EMAIL: %(my/org-contacts-template-email)
+     :END:")))
+     (global-set-key (kbd "C-c c") 'org-capture)
+   #+END_SRC   
+** hexo
+#+BEGIN_SRC emacs-lisp
+  (require-package 'blog-admin)
+
+  (setq blog-admin-backend-path "~/gitest/fymen.github.io/")
+  (setq blog-admin-backend-new-post-in-drafts t)             ;; 默认在drafts创建文章
+  (setq blog-admin-backend-new-post-with-same-name-dir nil)  ;; 默认不创建相应的目录，因为我目前没有发现这个目录的作用，先干掉 
+  (setq blog-admin-backend-hexo-config-file "_config.yml")   ;; hexo 配置文件
+
+  (add-hook 'blog-admin-backend-after-new-post-hook 'find-file)
+
+  (setq blog-admin-backend-hexo-template-org-post  ;; post模板
+			   "#+TITLE: %s
+  ,#+AUTHOR: 青青子襟
+  ,#+EMAIL: fengmao.qi@gmail.com
+  ,#+DATE: %s
+  ,#+LAYOUT: post
+  ,#+TAGS:
+  ,#+CATEGORIES:
+  ,#+DESCRIPTON:
+  ")
+
+#+END_SRC
+
+
+* Projectile
+  #+BEGIN_SRC emacs-lisp
+    (require-package 'helm-projectile)
+
+    (projectile-global-mode)
+    (setq projectile-completion-system 'helm)
+    (helm-projectile-on)
+
+    (setq projectile-enable-caching t)
+  #+END_SRC
+
+
+* Eshell
+  Press any key to jump back to the prompt:
+  #+BEGIN_SRC emacs-lisp
+  (setq eshell-scroll-to-bottom-on-input t)
+  #+END_SRC
+
+  some alias:
+  #+BEGIN_SRC emacs-lisp
+    (defalias 'e 'find-file)
+    (defalias 'ff 'find-file)
+    (defalias 'emacs 'find-file)
+
+    (defalias 'ee 'find-file-other-window)
+    (defalias 'ls "ls --color -h --group-directories-first $*")
+  #+END_SRC
+  
+  I will prefer the Unix implementations, like the =find= and =chomd=:
+  #+BEGIN_SRC elisp
+     (setq eshell-prefer-lisp-functions nil)
+  #+END_SRC
+  
+  Exit eshell:
+  #+BEGIN_SRC emacs-lisp
+    (defun eshell/x ()
+      "Closes the EShell session and gets rid of the EShell window."
+      (delete-window)
+      (eshell/exit))
+  #+END_SRC
+
+  Start eshell in current directory:
+  #+BEGIN_SRC emacs-lisp
+      (defun eshell-here ()
+      "Opens up a new shell in the directory associated with the
+    current buffer's file. The eshell is renamed to match that
+    directory to make multiple eshell windows easier."
+      (interactive)
+      (let* ((parent (if (buffer-file-name)
+                         (file-name-directory (buffer-file-name))
+                       default-directory))
+             (height (/ (window-total-height) 3))
+             (name   (car (last (split-string parent "/" t)))))
+        (split-window-vertically (- height))
+        (other-window 1)
+        (eshell "new")
+        (rename-buffer (concat "*eshell: " name "*"))
+
+        (insert (concat "ls"))
+        (eshell-send-input)))
+
+    (global-set-key (kbd "C-^") 'eshell-here)
+  #+END_SRC
+  
+  Stack current command:
+  #+BEGIN_SRC emacs-lisp
+    (require-package 'esh-buf-stack)
+    (setup-eshell-buf-stack)
+    (add-hook 'eshell-mode-hook
+              (lambda ()
+                (local-set-key
+                 (kbd "M-q") 'eshell-push-command)))
+  #+END_SRC
+
+
+* web development
+** web-mode
+#+BEGIN_SRC emacs-lisp
+(require-package 'web-mode)
+(require-package 'js2-mode)
+
+(require 'web-mode)
+(add-to-list 'auto-mode-alist '("\\.phtml\\'" . web-mode))
+(add-to-list 'auto-mode-alist '("\\.tpl\\.php\\'" . web-mode))
+(add-to-list 'auto-mode-alist '("\\.[agj]sp\\'" . web-mode))
+(add-to-list 'auto-mode-alist '("\\.as[cp]x\\'" . web-mode))
+(add-to-list 'auto-mode-alist '("\\.erb\\'" . web-mode))
+(add-to-list 'auto-mode-alist '("\\.mustache\\'" . web-mode))
+(add-to-list 'auto-mode-alist '("\\.djhtml\\'" . web-mode))
+(add-to-list 'auto-mode-alist '("\\.ts" . web-mode))
+#+END_SRC
+** COMMENT skewer-mode
+#+BEGIN_SRC emacs-lisp
+(require-package 'skewer-mode)
+(require 'skewer-mode)
+
+(add-hook 'js2-mode-hook 'skewer-mode)
+(add-hook 'css-mode-hook 'skewer-css-mode)
+(add-hook 'html-mode-hook 'skewer-html-mode)
+#+END_SRC
+** js2-mode
+#+BEGIN_SRC emacs-lisp
+(require-package 'js2-mode)
+(require 'js2-mode)
+#+END_SRC
+
+
+* Others
+;; 把 fill-column 设为 60. 这样的文字更好读
+;;(setq default-fill-column 60)
+
+;; 在标题栏显示buffer的名字
+;;(setq frame-title-format "emacs@%b")
+
+;;emacs 默认的滚动条是在左侧, 现在放到右侧
+;;(customize-set-variable 'scroll-bar-mode 'right)
+
+;;关闭自动保存模式
+;;(setq auto-save-mode nil)
+
+;;configuration for org-mode
+;;(setq org-startup-indented t)

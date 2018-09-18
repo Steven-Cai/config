@@ -22,15 +22,16 @@ apt_install()
     echo y |  sudo apt-get install $1 > /dev/null 2>&1;
 }
 
-#
-# Latex
-#
-latex()
+cscope_install()
 {
-    echo "Install LaTex..."
-    apt_install texlive-latex-base
-    apt_install latex-cjk-all
-    apt_install texlive-latex-extra
+    echo "        Installing Cscope..."
+    apt_install libncurses5-dev
+    apt_install libncursesw5-dev
+    make_install cscope*
+    sudo cp ${tmp_dir}/cscope*/src/cscope /usr/bin/
+    sudo cp ${tmp_dir}/cscope*/contrib/xcscope/cscope-indexer /usr/bin
+    sudo chmod 755 /usr/bin/cscope-indexer
+    sudo sed -i 's/cscope -b -i $LIST_FILE -f $DATABASE_FILE/cscope -q -b -i $LIST_FILE -f $DATABASE_FILE/' /usr/bin/cscope-indexer
 }
 
 #
@@ -40,23 +41,15 @@ emacs()
 {
     echo "Install and config Emacs..."
     echo "        Installing Emacs..."
-    apt_install emacs23
+
+    echo "\n" | sudo add-apt-repository ppa:kelleyk/emacs > /dev/null
+    echo "            success to add emacs25 repository"
+    sudo apt-get update > /dev/null
+    echo "            starting to install emacs25, it will take several minutes"
+    apt_install emacs25
     echo "        Configing Emacs..."
-    cd ${pwd}/files
-    cp -rf .emacs ~/
+    cd ${pwd}/config
     cp -rf .emacs.d ~/
-
-    echo "        Installing Cscope..."
-    apt_install libncurses5-dev
-    apt_install libncursesw5-dev
-    make_install cscope*
-    sudo cp ${tmp_dir}/cscope*/src/cscope /usr/bin/
-    sudo cp ${tmp_dir}/cscope*/contrib/xcscope/cscope-indexer /usr/bin
-    sudo chmod 755 /usr/bin/cscope-indexer
-    sudo sed -i 's/cscope -b -i $LIST_FILE -f $DATABASE_FILE/cscope -q -b -i $LIST_FILE -f $DATABASE_FILE/' /usr/bin/cscope-indexer
-
-    echo "        Installing auctex..."
-    make_install auctex*
 }
 
 #
@@ -64,7 +57,6 @@ emacs()
 #
 editor()
 {
-    latex;
     emacs;
 }
 
