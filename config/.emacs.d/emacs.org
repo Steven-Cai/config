@@ -1,13 +1,13 @@
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-;; Filename:      .emacs
-;;               
-;; Copyright (C) 2013,  Steven Cai
-;; Version:       20160918
-;; Author:        Steven <stevencaiyaohua#gmail.com>
+;; Filename:      emacs.org
+;;
+;; Copyright (C) 2018,  Steven Cai
+;; Version:       20180926
+;; Author:        Steven <stevencaiyaohua@gmail.com>
 ;; Created at:    Wed July 17 15:56:07 2013
-;;               
+;;
 ;; Description:   
-;;                
+;;
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
 * Packages
@@ -50,7 +50,6 @@
      (require 'use-package)
    #+END_SRC
 
- 
 
 * Personal information
   #+BEGIN_SRC emacs-lisp
@@ -80,14 +79,19 @@
      (line-number-mode 1)
    #+END_SRC
 
-** high light
+** theme
+   #+BEGIN_SRC emacs-lisp
+     ;; (require-package 'hc-zenburn-theme)
+     ;; (load-theme 'hc-zenburn t)
+   #+END_SRC
+** highlight
    #+BEGIN_SRC emacs-lisp
      ;; Highlight current line
      ;;(global-hl-line-mode 1)
 
      (show-paren-mode t) ;; 匹配括号高亮
-     ;;; Also highlight parens  
-     (setq show-paren-delay 0  
+     ;;; Also highlight parens
+     (setq show-paren-delay 0
            show-paren-style 'parenthesis)
 
      (require-package 'anzu)
@@ -108,7 +112,7 @@
 
      (mouse-avoidance-mode 'animate)
 
-     ;; share clipboard with X, 
+     ;; share clipboard with X,
      (setq x-select-enable-clipboard t)
      ;; share clipboard with app, suite for "C-c"
      (setq x-select-enable-primary t)
@@ -119,25 +123,6 @@
      (setq frame-title-format "%f %4 %b %Z %* %10 %I")
 
    #+END_SRC
-** smart-modeline
-   #+BEGIN_SRC emacs-lisp
-     (require-package 'smart-mode-line)
-
-     (display-time-mode 1)
-     (setq display-time-24hr-format t)
-     (setq display-time-day-and-date t)
-     (require 'smart-mode-line)
-     (setq sml/no-confirm-load-theme t)
-     (setq powerline-arrow-shape 'curve)
-     (setq powerline-default-separator-dir '(right . left))
-     (setq sml/mode-width 0)
-     (setq sml/name-width 20)
-     (rich-minority-mode 1)
-     (setf rm-blacklist "")
-     (setq sml/theme 'dark)
-     (sml/setup)
-   #+END_SRC
-
 ** setting
    #+BEGIN_SRC emacs-lisp
      ;;don't generate temporary backup file
@@ -151,7 +136,19 @@
 * General
 ** keystrokes
    #+BEGIN_SRC emacs-lisp
+     ;; eshell
      (global-set-key (kbd "<f1>") 'eshell)
+
+     ;; WindMove
+     (when (fboundp 'windmove-default-keybindings)
+       (windmove-default-keybindings))
+     (global-set-key (kbd "<left>") 'windmove-left)
+     (global-set-key (kbd "<right>") 'windmove-right)
+     (global-set-key (kbd "<up>") 'windmove-up)
+     (global-set-key (kbd "<down>") 'windmove-down)
+
+     ;; symon
+     (global-set-key (kbd "<f2>") 'symon-display)
    #+END_SRC
 
 ** Desktop save
@@ -162,6 +159,11 @@
    #+BEGIN_SRC emacs-lisp
      (setq ediff-window-setup-function 'ediff-setup-windows-plain
            ediff-split-window-function 'split-window-horizontally)
+   #+END_SRC
+** zone-mode
+   #+BEGIN_SRC emacs-lisp
+     (require 'zone)
+     (zone-when-idle 300)
    #+END_SRC
 ** youdao
    #+BEGIN_SRC emacs-lisp
@@ -236,8 +238,26 @@
 
    #+END_SRC
 
+** smart-modeline
+   #+BEGIN_SRC emacs-lisp
+     (require-package 'smart-mode-line)
+
+     (display-time-mode 1)
+     (setq display-time-24hr-format t)
+     (setq display-time-day-and-date t)
+     (require 'smart-mode-line)
+     (setq sml/no-confirm-load-theme t)
+     (setq powerline-arrow-shape 'curve)
+     (setq powerline-default-separator-dir '(right . left))
+     (setq sml/mode-width 0)
+     (setq sml/name-width 20)
+     (rich-minority-mode 1)
+     (setf rm-blacklist "")
+     (setq sml/theme 'dark)
+     (sml/setup)
+   #+END_SRC
 ** rainbow delimiters
-   #+BEGIN_SRC emacs-lisp 
+   #+BEGIN_SRC emacs-lisp
      (require-package 'rainbow-delimiters)
      (require-package 'rainbow-mode)
 
@@ -286,6 +306,13 @@
    #+BEGIN_SRC emacs-lisp
      (require-package 'nyan-mode)
      (nyan-mode 1)
+   #+END_SRC
+
+** symon
+   #+BEGIN_SRC emacs-lisp
+     (require-package 'symon)
+     (setq symon-delay 60)
+     (symon-mode)
    #+END_SRC
 
 
@@ -503,7 +530,7 @@ your project root:
 
 
 * Org-mode
-** basic 
+** basic
    #+BEGIN_SRC emacs-lisp
      (require-package 'org)
      (require-package 'org-bullets)
@@ -532,7 +559,7 @@ your project root:
 
      ;; The bottom line issue
      (setq org-use-sub-superscripts (quote {})
-           org-export-with-sub-superscripts (quote {})) 
+           org-export-with-sub-superscripts (quote {}))
 
      ;; (setq org-ellipsis "⤵")
 
@@ -587,8 +614,8 @@ your project root:
         (emacs-lisp . t)
         ))
 
-     (setq org-plantuml-jar-path "/home/oscar/.emacs.d/elpa/contrib/scripts/plantuml.jar")
-     (setq puml-plantuml-jar-path "/home/oscar/.emacs.d/elpa/contrib/scripts/plantuml.jar")
+     (setq org-plantuml-jar-path "~/.emacs.d/elpa/contrib/scripts/plantuml.jar")
+     (setq puml-plantuml-jar-path "~/.emacs.d/elpa/contrib/scripts/plantuml.jar")
      (add-to-list 'org-src-lang-modes '("plantuml" . puml))
    #+END_SRC
 ** latex
@@ -612,8 +639,8 @@ your project root:
                                    "xelatex -shell-escape  %f"))
      (setq org-latex-packages-alist
            '("
-             \\hypersetup{ colorlinks,% 
-                     linkcolor=blue,% 
+             \\hypersetup{ colorlinks,%
+                     linkcolor=blue,%
                      citecolor=black,%
                      urlcolor=black,%
                      filecolor=black
@@ -852,7 +879,7 @@ your project root:
      :EMAIL: %(my/org-contacts-template-email)
      :END:")))
      (global-set-key (kbd "C-c c") 'org-capture)
-   #+END_SRC   
+   #+END_SRC
 ** hexo
 #+BEGIN_SRC emacs-lisp
   (require-package 'blog-admin)
@@ -874,7 +901,6 @@ your project root:
   ,#+CATEGORIES:
   ,#+DESCRIPTON:
   ")
-
 #+END_SRC
 
 
@@ -905,12 +931,12 @@ your project root:
     (defalias 'ee 'find-file-other-window)
     (defalias 'ls "ls --color -h --group-directories-first $*")
   #+END_SRC
-  
+
   I will prefer the Unix implementations, like the =find= and =chomd=:
   #+BEGIN_SRC elisp
      (setq eshell-prefer-lisp-functions nil)
   #+END_SRC
-  
+
   Exit eshell:
   #+BEGIN_SRC emacs-lisp
     (defun eshell/x ()
@@ -941,7 +967,7 @@ your project root:
 
     (global-set-key (kbd "C-^") 'eshell-here)
   #+END_SRC
-  
+
   Stack current command:
   #+BEGIN_SRC emacs-lisp
     (require-package 'esh-buf-stack)
@@ -987,10 +1013,7 @@ your project root:
 
 * Others
 ;; 把 fill-column 设为 60. 这样的文字更好读
-;;(setq default-fill-column 60)
-
-;; 在标题栏显示buffer的名字
-;;(setq frame-title-format "emacs@%b")
+;; (setq default-fill-column 60)
 
 ;;emacs 默认的滚动条是在左侧, 现在放到右侧
 ;;(customize-set-variable 'scroll-bar-mode 'right)
@@ -998,5 +1021,3 @@ your project root:
 ;;关闭自动保存模式
 ;;(setq auto-save-mode nil)
 
-;;configuration for org-mode
-;;(setq org-startup-indented t)
