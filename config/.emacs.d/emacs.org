@@ -2,7 +2,7 @@
 ;; Filename:      emacs.org
 ;;
 ;; Copyright (C) 2018,  Steven Cai
-;; Version:       20180926
+;; Version:       20180927
 ;; Author:        Steven <stevencaiyaohua@gmail.com>
 ;; Created at:    Wed July 17 15:56:07 2013
 ;;
@@ -81,8 +81,8 @@
 
 ** theme
    #+BEGIN_SRC emacs-lisp
-     ;; (require-package 'hc-zenburn-theme)
-     ;; (load-theme 'hc-zenburn t)
+     (require-package 'hc-zenburn-theme)
+     (load-theme 'hc-zenburn t)
    #+END_SRC
 ** highlight
    #+BEGIN_SRC emacs-lisp
@@ -123,6 +123,10 @@
      (setq frame-title-format "%f %4 %b %Z %* %10 %I")
 
    #+END_SRC
+** customize-face
+   #+BEGIN_SRC emacs-lisp
+     (set-face-attribute 'region nil :background "#4169e1") ;;royalblue
+   #+END_SRC
 ** setting
    #+BEGIN_SRC emacs-lisp
      ;;don't generate temporary backup file
@@ -136,6 +140,13 @@
 * General
 ** keystrokes
    #+BEGIN_SRC emacs-lisp
+     ;; macos
+     ;;; set cmd key for meta
+     (setq mac-option-key-is-meta nil
+        mac-command-key-is-meta t
+        mac-command-modifier 'meta
+        mac-option-modifier 'none)
+
      ;; eshell
      (global-set-key (kbd "<f1>") 'eshell)
 
@@ -482,7 +493,6 @@ your project root:
 
      (global-set-key (kbd "C-c p f") 'helm-projectile-find-file-dwim)
      (global-set-key (kbd "C-c p p") 'helm-projectile-switch-project)
-
 
      (when (executable-find "ack-grep")
        (setq helm-grep-default-command "ack-grep -Hn --no-group --no-color %e %p %f"
