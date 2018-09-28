@@ -58,85 +58,6 @@
   #+END_SRC
 
 
-* Custom
-** emacs UI
-   Disable some no used menu bar to enlarge our main frame.
-   #+BEGIN_SRC emacs-lisp
-     (when (functionp 'menu-bar-mode)
-       (menu-bar-mode -1))
-     (when (functionp 'set-scroll-bar-mode)
-       (set-scroll-bar-mode 'nil))
-     (when (functionp 'mouse-wheel-mode)
-       (mouse-wheel-mode -1))
-     (when (functionp 'tooltip-mode)
-       (tooltip-mode -1))
-     (when (functionp 'tool-bar-mode)
-       (tool-bar-mode -1))
-     (when (functionp 'blink-cursor-mode)
-       (blink-cursor-mode -1))
-
-     (column-number-mode 1)
-     (line-number-mode 1)
-   #+END_SRC
-
-** theme
-   #+BEGIN_SRC emacs-lisp
-     (require-package 'hc-zenburn-theme)
-     (load-theme 'hc-zenburn t)
-   #+END_SRC
-** highlight
-   #+BEGIN_SRC emacs-lisp
-     ;; Highlight current line
-     ;;(global-hl-line-mode 1)
-
-     (show-paren-mode t) ;; 匹配括号高亮
-     ;;; Also highlight parens
-     (setq show-paren-delay 0
-           show-paren-style 'parenthesis)
-
-     (require-package 'anzu)
-     (global-anzu-mode +1)
-     (global-set-key [remap query-replace-regexp] 'anzu-query-replace-regexp)
-     (global-set-key [remap query-replace] 'anzu-query-replace)
-
-     ;; 最短时间显示指令序列
-     (setq echo-keystrokes 0.1)
-     (setq inhibit-startup-message t)
-     (fset 'yes-or-no-p 'y-or-n-p)
-     ;; 防止页面滚动时跳动,scroll-margin 3可以在靠近屏幕边沿3行时就开始滚动,可
-     ;; 以很好的看到上下文
-     (setq scroll-margin 3
-           scroll-conservatively 10000)
-
-     (setq ring-bell-function 'ignore)
-
-     (mouse-avoidance-mode 'animate)
-
-     ;; share clipboard with X,
-     (setq x-select-enable-clipboard t)
-     ;; share clipboard with app, suite for "C-c"
-     (setq x-select-enable-primary t)
-
-     ;; (setq frame-title-format
-     ;;       '("emacs:%S" (buffer-file-name "%f"
-     ;;                             (dired-directory dired-directory "%b"))))
-     (setq frame-title-format "%f %4 %b %Z %* %10 %I")
-
-   #+END_SRC
-** customize-face
-   #+BEGIN_SRC emacs-lisp
-     (set-face-attribute 'region nil :background "#4169e1") ;;royalblue
-   #+END_SRC
-** setting
-   #+BEGIN_SRC emacs-lisp
-     ;;don't generate temporary backup file
-     (setq-default make-backup-files nil)
-
-     ;; 以 y/n代表 yes/no
-     (fset 'yes-or-no-p 'y-or-n-p)
-   #+END_SRC
-
-
 * General
 ** keystrokes
    #+BEGIN_SRC emacs-lisp
@@ -330,10 +251,10 @@
 * Program
 ** code-style
     #+BEGIN_SRC emacs-lisp
-        ;; 设置默认tab宽度为4
-        (setq tab-width 4
-        indent-tabs-mode t
-        c-basic-offset 4)
+    ;; 设置默认tab宽度为4
+    (setq tab-width 4
+      indent-tabs-mode t
+      c-basic-offset 4)
 
 	;; 回车缩进
 	(global-set-key "\C-m" 'newline-and-indent)
@@ -1021,13 +942,90 @@ your project root:
 #+END_SRC
 
 
+* Custom
+** emacs UI
+   Disable some no used menu bar to enlarge our main frame.
+   #+BEGIN_SRC emacs-lisp
+     (when (functionp 'menu-bar-mode)
+       (menu-bar-mode -1))
+     (when (functionp 'set-scroll-bar-mode)
+       (set-scroll-bar-mode 'nil))
+     (when (functionp 'mouse-wheel-mode)
+       (mouse-wheel-mode -1))
+     (when (functionp 'tooltip-mode)
+       (tooltip-mode -1))
+     (when (functionp 'tool-bar-mode)
+       (tool-bar-mode -1))
+     (when (functionp 'blink-cursor-mode)
+       (blink-cursor-mode -1))
+
+     (column-number-mode 1)
+     (line-number-mode 1)
+   #+END_SRC
+
+** theme
+   #+BEGIN_SRC emacs-lisp
+     (require-package 'hc-zenburn-theme)
+     (load-theme 'hc-zenburn t)
+   #+END_SRC
+** highlight
+   #+BEGIN_SRC emacs-lisp
+     ;; Highlight current line
+     ;;(global-hl-line-mode 1)
+
+     (show-paren-mode t) ;; 匹配括号高亮
+     ;;; Also highlight parens
+     (setq show-paren-delay 0
+           show-paren-style 'parenthesis)
+
+     (require-package 'anzu)
+     (global-anzu-mode +1)
+     (global-set-key [remap query-replace-regexp] 'anzu-query-replace-regexp)
+     (global-set-key [remap query-replace] 'anzu-query-replace)
+
+     ;; 最短时间显示指令序列
+     (setq echo-keystrokes 0.1)
+     (setq inhibit-startup-message t)
+     (fset 'yes-or-no-p 'y-or-n-p)
+     ;; 防止页面滚动时跳动,scroll-margin 3可以在靠近屏幕边沿3行时就开始滚动,可
+     ;; 以很好的看到上下文
+     (setq scroll-margin 3
+           scroll-conservatively 10000)
+
+     (setq ring-bell-function 'ignore)
+
+     (mouse-avoidance-mode 'animate)
+
+     ;; share clipboard with X,
+     (setq x-select-enable-clipboard t)
+     ;; share clipboard with app, suite for "C-c"
+     (setq x-select-enable-primary t)
+
+     ;; (setq frame-title-format
+     ;;       '("emacs:%S" (buffer-file-name "%f"
+     ;;                             (dired-directory dired-directory "%b"))))
+     (setq frame-title-format "%f %4 %b %Z %* %10 %I")
+
+   #+END_SRC
+** customize-face
+   #+BEGIN_SRC emacs-lisp
+     ;;royalblue    #4169e1
+     (set-face-attribute 'region nil :background "#4169e1")
+     (set-face-attribute 'helm-selection nil :background "#4169e1")
+   #+END_SRC
+** setting
+   #+BEGIN_SRC emacs-lisp
+     ;;don't generate temporary backup file
+     (setq-default make-backup-files nil)
+
+     ;; 以 y/n代表 yes/no
+     (fset 'yes-or-no-p 'y-or-n-p)
+   #+END_SRC
+
+
 * Others
 ;; 把 fill-column 设为 60. 这样的文字更好读
 ;; (setq default-fill-column 60)
 
 ;;emacs 默认的滚动条是在左侧, 现在放到右侧
 ;;(customize-set-variable 'scroll-bar-mode 'right)
-
-;;关闭自动保存模式
-;;(setq auto-save-mode nil)
-
