@@ -94,8 +94,8 @@
    #+END_SRC
 ** zone-mode
    #+BEGIN_SRC emacs-lisp
-     (require 'zone)
-     (zone-when-idle 300)
+     ;; (require 'zone)
+     ;; (zone-when-idle 300)
    #+END_SRC
 ** youdao
    #+BEGIN_SRC emacs-lisp
