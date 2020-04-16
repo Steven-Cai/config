@@ -536,7 +536,7 @@ your project root:
      ;; active Babel languages
      (org-babel-do-load-languages
       'org-babel-load-languages
-      '((sh . t)
+      '((shell . t)  ;; (sh . t) for lower version emacs. ob-sh renamed to sh-shell
         (dot . t)
         (ditaa . t)
         (python . t)
