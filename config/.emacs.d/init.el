@@ -1,8 +1,16 @@
 (require 'package)
+
 (add-to-list 'package-archives
-;; '("marmalade" . "http://marmalade-repo.org/packages/") ;
-	     '("melpa" . "https://melpa.org/packages/"))
-;;        '("melpa-stable" . "https://stable.melpa.org/packages/") t)
+	'("marmalade" . "http://marmalade-repo.org/packages/") t)
+(add-to-list 'package-archives
+	'("gnu" . "http://elpa.gnu.org/packages/") t)
+(add-to-list 'package-archives
+	'("melpa" . "http://melpa.org/packages/") t)
+(add-to-list 'package-archives
+	'("melpa-stable" . "http://stable.melpa.org/packages/") t)
+(add-to-list 'package-archives
+	'("gnu-mirror" . "http://mirrors.tuna.tsinghua.edu.cn/elpa/gnu") t)
+
 
 (package-initialize) ;; You might already have this line
 
