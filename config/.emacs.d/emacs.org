@@ -59,6 +59,13 @@
 
 
 * General
+** Settings
+   #+BEGIN_SRC emacs-lisp
+     (require 'exec-path-from-shell)
+     (when (memq window-system '(mac ns))
+       (exec-path-from-shell-initialize))
+   #+END_SRC
+
 ** keystrokes
    #+BEGIN_SRC emacs-lisp
      ;; macos
@@ -367,7 +374,6 @@ your project root:
       (add-hook 'c-mode-common-hook '(lambda() (require 'xcscope)))
       (setq cscope-do-not-update-database t)
     #+END_SRC
-
 ** Matlab
     #+BEGIN_SRC emacs-lisp
       (autoload 'matlab-mode "matlab" "Matlab Editing Mode" t)
