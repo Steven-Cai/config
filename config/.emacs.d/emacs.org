@@ -1021,7 +1021,8 @@ your project root:
      ;; (setq frame-title-format
      ;;       '("emacs:%S" (buffer-file-name "%f"
      ;;                             (dired-directory dired-directory "%b"))))
-     (setq frame-title-format "%f %4 %b %Z %* %10 %I")
+     ;;(setq frame-title-format "%f %4 %b %Z %* %10 %I")
+     (setq frame-title-format "%n")
 
    #+END_SRC
 ** customize-face
