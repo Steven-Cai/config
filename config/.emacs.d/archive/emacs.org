@@ -11,91 +11,91 @@
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
 * Packages
-  #+BEGIN_SRC emacs-lisp
-    ;;; On-demand installation of packages
+#+BEGIN_SRC emacs-lisp
+;;; On-demand installation of packages
 
-    (defun require-package (package &optional min-version no-refresh)
-      "Install given PACKAGE, optionally requiring MIN-VERSION.
-    If NO-REFRESH is non-nil, the available package lists will not be
-    re-downloaded in order to locate PACKAGE."
-      (if (package-installed-p package min-version)
-          t
-        (if (or (assoc package package-archive-contents) no-refresh)
-            (if (boundp 'package-selected-packages)
-                ;; Record this as a package the user installed explicitly
-                (package-install package nil)
-              (package-install package))
-          (progn
-            (package-refresh-contents)
-            (require-package package min-version t)))))
+(defun require-package (package &optional min-version no-refresh)
+  "Install given PACKAGE, optionally requiring MIN-VERSION.
+If NO-REFRESH is non-nil, the available package lists will not be
+re-downloaded in order to locate PACKAGE."
+  (if (package-installed-p package min-version)
+      t
+    (if (or (assoc package package-archive-contents) no-refresh)
+        (if (boundp 'package-selected-packages)
+            ;; Record this as a package the user installed explicitly
+            (package-install package nil)
+          (package-install package))
+      (progn
+        (package-refresh-contents)
+        (require-package package min-version t)))))
 
 
-    (defun maybe-require-package (package &optional min-version no-refresh)
-      "Try to install PACKAGE, and return non-nil if successful.
-    In the event of failure, return nil and print a warning message.
-    Optionally require MIN-VERSION.  If NO-REFRESH is non-nil, the
-    available package lists will not be re-downloaded in order to
-    locate PACKAGE."
-      (condition-case err
-          (require-package package min-version no-refresh)
-        (error
-         (message "Couldn't install package `%s': %S" package err)
-         nil)))
-  #+END_SRC
+(defun maybe-require-package (package &optional min-version no-refresh)
+  "Try to install PACKAGE, and return non-nil if successful.
+In the event of failure, return nil and print a warning message.
+Optionally require MIN-VERSION.  If NO-REFRESH is non-nil, the
+available package lists will not be re-downloaded in order to
+locate PACKAGE."
+  (condition-case err
+      (require-package package min-version no-refresh)
+    (error
+     (message "Couldn't install package `%s': %S" package err)
+     nil)))
+#+END_SRC
 ** use-package
-   #+BEGIN_SRC emacs-lisp
-     (unless (package-installed-p 'use-package)
-       (package-refresh-contents)
-       (package-install 'use-package))
-     (require 'use-package)
-   #+END_SRC
+#+BEGIN_SRC emacs-lisp
+(unless (package-installed-p 'use-package)
+  (package-refresh-contents)
+  (package-install 'use-package))
+(require 'use-package)
+#+END_SRC
 
 
 * Personal information
-  #+BEGIN_SRC emacs-lisp
-    (setq user-full-name "Steven Cai")
-    (setq user-mail-address "stevencaiyaohua@gmail.com")
-  #+END_SRC
+#+BEGIN_SRC emacs-lisp
+(setq user-full-name "Steven Cai")
+(setq user-mail-address "stevencaiyaohua@gmail.com")
+#+END_SRC
 
 
 * General
 ** Settings
-   #+BEGIN_SRC emacs-lisp
-     (require-package 'exec-path-from-shell)
-     (when (memq window-system '(mac ns))
-       (exec-path-from-shell-initialize))
-   #+END_SRC
+#+BEGIN_SRC emacs-lisp
+(require-package 'exec-path-from-shell)
+(when (memq window-system '(mac ns))
+  (exec-path-from-shell-initialize))
+#+END_SRC
 
 ** keystrokes
-   #+BEGIN_SRC emacs-lisp
-     ;; macos
-     ;;; set cmd key for meta
-     (setq mac-option-key-is-meta nil
-        mac-command-key-is-meta t
-        mac-command-modifier 'meta
-        mac-option-modifier 'none)
+#+BEGIN_SRC emacs-lisp
+;; macos
+;;; set cmd key for meta
+(setq mac-option-key-is-meta nil
+      mac-command-key-is-meta t
+      mac-command-modifier 'meta
+      mac-option-modifier 'none)
 
-     ;; eshell
-     (global-set-key (kbd "<f1>") 'eshell)
+;; eshell
+(global-set-key (kbd "<f1>") 'eshell)
 
-     ;; WindMove
-     (when (fboundp 'windmove-default-keybindings)
-       (windmove-default-keybindings))
-     (global-set-key (kbd "<left>") 'windmove-left)
-     (global-set-key (kbd "<right>") 'windmove-right)
-     (global-set-key (kbd "<up>") 'windmove-up)
-     (global-set-key (kbd "<down>") 'windmove-down)
+;; WindMove
+(when (fboundp 'windmove-default-keybindings)
+  (windmove-default-keybindings))
+(global-set-key (kbd "<left>") 'windmove-left)
+(global-set-key (kbd "<right>") 'windmove-right)
+(global-set-key (kbd "<up>") 'windmove-up)
+(global-set-key (kbd "<down>") 'windmove-down)
 
-     ;; symon
-     (global-set-key (kbd "<f2>") 'symon-display)
-   #+END_SRC
+;; symon
+(global-set-key (kbd "<f2>") 'symon-display)
+#+END_SRC
 
 ** Desktop save
-   #+BEGIN_SRC emacs-lisp
-     (desktop-save-mode 1)
-   #+END_SRC
+#+BEGIN_SRC emacs-lisp
+(desktop-save-mode 1)
+#+END_SRC
 ** ediff
-   #+BEGIN_SRC emacs-lisp
+#+BEGIN_SRC emacs-lisp
      (setq ediff-window-setup-function 'ediff-setup-windows-plain
            ediff-split-window-function 'split-window-horizontally)
    #+END_SRC
@@ -417,7 +417,7 @@ your project root:
   (require 'helm-eshell)        ; question
   (add-hook 'eshell-mode-hook
         #'(lambda ()
-        (define-key eshell-mode-map (kbd "C-c C-l")  'helm-eshell-history))) 
+        (define-key eshell-mode-map (kbd "C-c C-l")  'helm-eshell-history)))
   (defun spacemacs//helm-hide-minibuffer-maybe ()
   "Hide minibuffer in Helm session if we use the header line as input field."
   (when (with-helm-buffer helm-echo-input-in-header-line)
@@ -848,7 +848,7 @@ your project root:
 
   (setq blog-admin-backend-path "~/gitest/fymen.github.io/")
   (setq blog-admin-backend-new-post-in-drafts t)             ;; 默认在drafts创建文章
-  (setq blog-admin-backend-new-post-with-same-name-dir nil)  ;; 默认不创建相应的目录，因为我目前没有发现这个目录的作用，先干掉 
+  (setq blog-admin-backend-new-post-with-same-name-dir nil)  ;; 默认不创建相应的目录，因为我目前没有发现这个目录的作用，先干掉
   (setq blog-admin-backend-hexo-config-file "_config.yml")   ;; hexo 配置文件
 
   (add-hook 'blog-admin-backend-after-new-post-hook 'find-file)
