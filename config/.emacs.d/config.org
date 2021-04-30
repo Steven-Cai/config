@@ -1193,7 +1193,7 @@ Used for sorting items.
        truncate-lines t
        truncate-partial-width-windows 70)
 
-(add-hook! 'before-save-hook #'delete-trailing-whitespace)
+;; (add-hook! 'before-save-hook #'delete-trailing-whitespace)
 (add-hook! 'after-save-hook #'executable-make-buffer-file-executable-if-script-p)
 #+END_SRC
 
@@ -3795,6 +3795,14 @@ Return DEFAULT if FIELD is not present in ENTRY."
 
 *** Dired
 **** Base and utility functions
+C-x d   Dired mode
+C       Copy
+R       rename and move file
+D       delete file or directory
++       Create new dir
+u       unmark
+U       unmark all
+q       quit
 #+BEGIN_SRC emacs-lisp
 (use-package dired
   :config
@@ -4079,7 +4087,8 @@ and append it."
                             (:eval (number-to-string (pdf-view-current-page)))
                             "/"
                             (:eval (number-to-string (pdf-cache-number-of-pages)))
-                            "]")))))
+                            "]"))))
+  (add-hook 'pdf-tools-enabled-hook 'pdf-view-midnight-minor-mode))
 
 (use-package pdf-annot :config (setq! pdf-annot-tweak-tooltips nil))
 (use-package pdf-cache :config (setq! pdf-cache-image-limit 200))
@@ -4285,6 +4294,21 @@ _p_rev       _u_pper              _=_: upper/lower       _r_esolve
 (use-package doom-themes-ext-treemacs
   :after treemacs :demand
   :init (setq! doom-themes-treemacs-enable-variable-pitch nil))
+#+END_SRC
+
+*** Exec-path-from-shell
+#+BEGIN_SRC emacs-lisp
+;; (use-package exec-path-from-shell
+;;   :ensure t
+;;   :if (memq window-system '(mac ns))
+;;   :config
+;;   (setq exec-path-from-shell-arguments '("-l"))
+;;   (exec-path-from-shell-initialize)
+;;   (exec-path-from-shell-copy-envs
+;;    '("GOPATH" "GO111MODULE" "GOPROXY"
+;;      "NPMBIN" "LC_ALL" "LANG" "LC_TYPE"
+;;      "SSH_AGENT_PID" "SSH_AUTH_SOCK" "SHELL"
+;;      "JAVA_HOME")))
 #+END_SRC
 
 ** Development Tools
