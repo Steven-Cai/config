@@ -3795,6 +3795,7 @@ Return DEFAULT if FIELD is not present in ENTRY."
 
 *** Dired
 **** Base and utility functions
+Dired keybinding
 C-x d   Dired mode
 C       Copy
 R       rename and move file
@@ -4181,6 +4182,27 @@ _p_rev       _u_pper              _=_: upper/lower       _r_esolve
   (fmakunbound 'gdb)
   (fmakunbound 'gdb-enable-debug))
 #+END_SRC
+GDB keybinding
+
+General
+F5	Run or continue
+C-F5	(Re)Start and break at main
+S-F5	Kill inferior
+F6	Stop
+F8	Create watcher
+C-F8	Evaluate expression once
+F9	Create or delete breakpoint
+F10	Step over (instruction wise with M-)
+C-F10	Run until cursor
+F11	Step into (instruction wise with M-)
+C-F11	Advance to cursor
+S-F11	Step out
+F12	Switch buffer or pop to frame
+
+Threads buffer
+SPC	Select thread
+c     Continue thread
+s     Stop thread
 
 *** Git
 #+BEGIN_SRC emacs-lisp
