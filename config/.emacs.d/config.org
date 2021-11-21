@@ -1193,7 +1193,7 @@ Used for sorting items.
        truncate-lines t
        truncate-partial-width-windows 70)
 
-;; (add-hook! 'before-save-hook #'delete-trailing-whitespace)
+;; (add-hook! 'before-save-hook #'delete-trailing-whitespace) ;; habit
 (add-hook! 'after-save-hook #'executable-make-buffer-file-executable-if-script-p)
 #+END_SRC
 
@@ -1277,11 +1277,11 @@ And/or press M-j(ivy-yank-work) to extend the minibuffer input with the next wor
   :after-call (pre-command-hook after-find-file dired-before-readin-hook)
   :general
   (:keymaps 'company-mode-map
-   "<tab>" 'company-complete)
+   "<C-tab>" 'company-complete)
   (:keymaps 'company-active-map
-   "<tab>" 'company-complete-common-or-cycle)
+   "<C-tab>" 'company-complete-common-or-cycle)
   (:keymaps 'company-template-nav-map
-   "<tab>" 'company-complete-common
+   "<C-tab>" 'company-complete-common
    "<C-return>" 'company-template-forward-field)
 
   :config
@@ -1620,6 +1620,8 @@ fundamental-mode) for performance sake."
   (setq! c-default-style "weirdNox")
   (c-add-style c-default-style
                '((c-basic-offset . 4)
+                 (tab-width . 4)
+                 (indent-tabs-mode t)
                  (c-offsets-alist . ((arglist-close . c-lineup-arglist)
                                      (case-label . +)
                                      (statement-case-intro . (+cc-style-stmt-case-intro +))
@@ -1654,6 +1656,18 @@ fundamental-mode) for performance sake."
 (setq indent-tabs-mode t)
 (setq c-basic-offset 8))
 (add-to-list 'auto-mode-alist '("\.c$" . linux-c-mode))
+#+END_SRC
+
+*** C#
+#+BEGIN_SRC emacs-lisp
+;; If you met tar not found error, trying 'package-refresh-contents' may solve the problem.
+(use-package tree-sitter :ensure t)
+(use-package tree-sitter-langs :ensure t)
+
+(use-package csharp-mode
+  :ensure t
+  :config
+  (add-to-list 'auto-mode-alist '("\\.cs\\'" . csharp-tree-sitter-mode)))
 #+END_SRC
 
 *** GLSL
