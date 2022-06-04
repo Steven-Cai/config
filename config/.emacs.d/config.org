@@ -11,6 +11,8 @@
 This is Steven's Emacs configuration.
 
 #+BEGIN_SRC emacs-lisp
+;; The configuration works good on emacs27.1 on Ubuntu 20.04.
+;; sudo apt-get install emacs27
 (setq-default user-full-name "Steven Cai")
 #+END_SRC
 
@@ -588,6 +590,9 @@ symbols.
   (projectile-mode))
 #+END_SRC
 
+C-c p s g: Run "grep" on the files in the project.
+C-c p f  : Find files in the project.
+
 ** General settings and tweaks
 #+BEGIN_SRC emacs-lisp
 (setq!
@@ -978,6 +983,13 @@ Disable fringes in the minibuffer window.
 (if (daemonp)
     (add-transient-hook! 'after-make-frame-functions 'nox-setup-appearance)
   (add-transient-hook! 'emacs-startup-hook (nox-setup-appearance (selected-frame))))
+
+;; Hide the Tool-bar
+(tool-bar-mode -1)
+
+;; Disable scrollbar on new frame
+(add-to-list 'default-frame-alist
+             '(vertical-scroll-bars . nil))
 #+END_SRC
 
 ** Minibuffer completion
@@ -4200,8 +4212,29 @@ _p_rev       _u_pper              _=_: upper/lower       _r_esolve
                                     :files ("*.el" "*.c" "*.h" "Makefile"))
   :init
   (fmakunbound 'gdb)
-  (fmakunbound 'gdb-enable-debug))
+  (fmakunbound 'gdb-enable-debug)
+  (setq gdb-ignore-gdbinit nil)
+
+  ;; Advice the function to do additional work in setting up windows.
+  (defadvice gdb-setup-windows (after activate)
+    (with-selected-frame (gdb--session-frame session)
+    (delete-other-windows)
+    (let* ((top-left (selected-window))
+           (middle-left (split-window))
+           (bottom-left (split-window middle-left))
+           (top-right (split-window top-left nil t))
+           (middle-right (split-window middle-left nil t))
+           (bottom-right (split-window bottom-left nil t)))
+      ;;(balance-windows)
+      (gdb--set-window-buffer top-left     (gdb--comint-get-buffer session))
+      (gdb--set-window-buffer top-right    (gdb--threads-get-buffer session))
+      (gdb--set-window-buffer middle-left  (gdb--breakpoints-get-buffer session))
+      (gdb--set-window-buffer middle-right (gdb--frames-get-buffer session))
+      (gdb--set-window-buffer bottom-left  (gdb--inferior-io-get-buffer session))
+      (gdb--set-window-buffer bottom-right (gdb--variables-get-buffer session))
+      (gdb--display-source-buffer top-left)))))
 #+END_SRC
+
 GDB keybinding
 
 General
@@ -4340,17 +4373,17 @@ s     Stop thread
 
 *** Exec-path-from-shell
 #+BEGIN_SRC emacs-lisp
-;; (use-package exec-path-from-shell
-;;   :ensure t
-;;   :if (memq window-system '(mac ns))
-;;   :config
-;;   (setq exec-path-from-shell-arguments '("-l"))
-;;   (exec-path-from-shell-initialize)
-;;   (exec-path-from-shell-copy-envs
-;;    '("GOPATH" "GO111MODULE" "GOPROXY"
-;;      "NPMBIN" "LC_ALL" "LANG" "LC_TYPE"
-;;      "SSH_AGENT_PID" "SSH_AUTH_SOCK" "SHELL"
-;;      "JAVA_HOME")))
+(use-package exec-path-from-shell
+  :ensure t
+  :if (memq window-system '(mac ns))
+  :config
+  (setq exec-path-from-shell-arguments '("-l"))
+  (exec-path-from-shell-initialize)
+  (exec-path-from-shell-copy-envs
+   '("GOPATH" "GO111MODULE" "GOPROXY"
+     "NPMBIN" "LC_ALL" "LANG" "LC_TYPE"
+     "SSH_AGENT_PID" "SSH_AUTH_SOCK" "SHELL"
+     "JAVA_HOME")))
 #+END_SRC
 
 ** Development Tools
